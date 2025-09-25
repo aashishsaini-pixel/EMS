@@ -15,10 +15,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class EmployeeRequestDTO {
 
-    @NotBlank(message = "Employee code is required")
-    @Size(max = 20, message = "Employee code must not exceed 20 characters")
-    private String employeeCode;
-
     @NotBlank(message = "First name is required")
     @Size(max = 50, message = "First name must not exceed 50 characters")
     private String firstName;

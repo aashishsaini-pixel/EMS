@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
+import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     @Query("SELECT e FROM Employee e WHERE e.isActive = true AND (e.email = :email OR e.employeeCode = :employeeCode)")
@@ -28,4 +29,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             @Param("isActive") Boolean isActive,
             Pageable pageable
     );
+
+    Optional<Employee> findByIdAndIsActiveTrue(Long id);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByEmailAndIdNot(String email, Long id);
+
 }

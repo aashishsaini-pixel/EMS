@@ -12,4 +12,7 @@ public interface EmployeeMapper {
 
     EmployeeResponseDTO toResponseDTO(Employee employee);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEmployee(EmployeeRequestDTO employeeRequestDTO, @MappingTarget Employee employee);
+
 }

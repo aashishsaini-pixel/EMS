@@ -63,5 +63,11 @@ public class EmployeeController {
         return ResponseEntity.ok(CommonResponse.success("Employee deleted successfully", deletedEmployee));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<CommonResponse<EmployeeResponseDTO>> updateEmployee(@PathVariable Long id , @Valid @RequestBody EmployeeRequestDTO employeeRequestDTO) {
+        log.info("Received request to update Employee with ID: {}", id);
+        EmployeeResponseDTO updatedEmployee = employeeService.updateEmployee(id , employeeRequestDTO);
+        return  ResponseEntity.ok(CommonResponse.success("Employee updated successfully", updatedEmployee));
+    }
 
 }
