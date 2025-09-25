@@ -11,88 +11,103 @@ import com.Ems.EmployeeManagmentSystem.Repository.EmployeeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
-
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
-
     @Override
     @Transactional
     public EmployeeResponseDTO addEmployee(EmployeeRequestDTO employeeRequestDTO) {
-        log.info("Adding an employee with email: {} and employee code {}", employeeRequestDTO.getEmail() , employeeRequestDTO.getEmployeeCode());
+        log.info("Attempting to add employee with email={}", employeeRequestDTO.getEmail());
 
-        log.info("EmployeeController:addEmployee");
-
-        List<Employee> employees = employeeRepository.findActiveByEmailOrEmployeeCode(employeeRequestDTO.getEmail(), employeeRequestDTO.getEmployeeCode());
-
-        if(!employees.isEmpty()){
-            boolean emailExists = employees.stream().anyMatch(emp -> emp.getEmail().equals(employeeRequestDTO.getEmail()));
-            boolean employeeCodeExists = employees.stream().anyMatch(emp -> emp.getEmployeeCode().equals(employeeRequestDTO.getEmployeeCode()));
-
-            if(emailExists && employeeCodeExists){
-                log.info("Employee already exists with email {} and employee code {}", employeeRequestDTO.getEmail(), employeeRequestDTO.getEmployeeCode());
-                throw new EmployeeAlreadyExistsException("Employee already exists with email " + employeeRequestDTO.getEmail() + " and employee code " + employeeRequestDTO.getEmployeeCode());
-            }else if(emailExists){
-                log.info("Employee already exists with email {}", employeeRequestDTO.getEmail());
-                throw new EmployeeAlreadyExistsException("Employee already exists with email " + employeeRequestDTO.getEmail());
-            }else{
-                log.info("Employee already exists with employeeCode {}", employeeRequestDTO.getEmployeeCode());
-                throw new EmployeeAlreadyExistsException("Employee already exists with Employee Code " + employeeRequestDTO.getEmployeeCode());
-            }
+        if (employeeRepository.existsByEmail(employeeRequestDTO.getEmail())) {
+            log.info("Employee with email={} already exists", employeeRequestDTO.getEmail());
+            throw new EmployeeAlreadyExistsException("Employee already exists with email " + employeeRequestDTO.getEmail());
         }
 
         Employee employee = employeeMapper.toEntity(employeeRequestDTO);
 
-         employeeRepository.save(employee);
+        employeeRepository.save(employee);
 
-        log.info("Employee Created Successfully with id {}" , employee.getId());
+        employee.setEmployeeCode("Emp-" + employee.getId());
 
+        employeeRepository.save(employee);
+
+        log.info("Employee created successfully with ID={}", employee.getId());
         return employeeMapper.toResponseDTO(employee);
     }
 
 
     @Override
+    @Transactional
     public EmployeeResponseDTO deleteEmployee(Long id) {
-        log.info("EmployeeService:deleteEmployee called with id={}", id);
+        log.info("Request to delete employee with ID={}", id);
 
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.warn("Employee not found with id={}", id);
-                    return new EmployeeNotFoundException("Employee not found with id " + id);
+                    log.warn("Employee not found with ID={}", id);
+                    return new EmployeeNotFoundException("Employee not found with ID " + id);
                 });
 
         employee.setIsActive(false);
+        employee.setIsDeleted(true);
+
         employeeRepository.save(employee);
 
-        log.info("Employee with id={} marked as inactive (soft deleted)", id);
-
+        log.info("Employee with ID={} marked as inactive and deleted", id);
         return employeeMapper.toResponseDTO(employee);
     }
 
 
-
-
     @Override
-    public Page<EmployeeResponseDTO> getEmployee(String name,EmployeeStatus status,String department,Boolean isActive,int page,int size,String sortBy) {
-
-        log.info("Get employee in the service");
+    public Page<EmployeeResponseDTO> getEmployee(String name, EmployeeStatus status, String department, Boolean isActive, int page, int size, String sortBy) {
+        log.info("Fetching employees with filters: name={}, status={}, department={}, isActive={}", name, status, department, isActive);
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, sortBy));
         Page<Employee> employees = employeeRepository.findByFilters(name, status, department, isActive, pageable);
 
+        log.info("Employees found successfully with total employee in page {} size {} is {}", page, size, employees.getTotalElements());
+
         return employees.map(employeeMapper::toResponseDTO);
+    }
+
+
+    @Override
+    @Transactional
+    public EmployeeResponseDTO updateEmployee(Long id, EmployeeRequestDTO employeeRequestDTO) {
+        log.info("Attempting to update employee with ID={}", id);
+
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.warn("Employee not found with ID={}", id);
+                    return new EmployeeNotFoundException("Employee not found with ID " + id);
+                });
+
+        if (!Boolean.TRUE.equals(employee.getIsActive()) || Boolean.TRUE.equals(employee.getIsDeleted())) {
+            log.warn("Cannot update inactive or deleted employee with ID={}", id);
+            throw new IllegalStateException("Cannot update inactive or deleted employee with ID " + id);
+        }
+
+        boolean emailExists = employeeRepository.existsByEmailAndIdNot(employeeRequestDTO.getEmail(), id);
+        if (emailExists) {
+            log.info("Email {} already used by another employee", employeeRequestDTO.getEmail());
+            throw new EmployeeAlreadyExistsException("Email " + employeeRequestDTO.getEmail() + " is already in use.");
+        }
+
+        employeeMapper.updateEmployee(employeeRequestDTO, employee);
+
+        employeeRepository.save(employee);
+
+        log.info("Employee updated successfully. ID={}, employeeCode={}", employee.getId(), employee.getEmployeeCode());
+
+        return employeeMapper.toResponseDTO(employee);
     }
 }

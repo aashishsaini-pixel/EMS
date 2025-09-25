@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 public interface EmployeeService {
 
     EmployeeResponseDTO addEmployee(EmployeeRequestDTO employeeRequestDTO);
-//    EmployeeResponseDTO updateEmployee(int id , EmployeeRequestDTO employeeRequestDTO);
     EmployeeResponseDTO deleteEmployee(Long id);
     Page<EmployeeResponseDTO> getEmployee(String name,
                                           EmployeeStatus status,
@@ -18,5 +17,6 @@ public interface EmployeeService {
                                           int page,
                                           int size,
                                           String sortBy);
+    EmployeeResponseDTO updateEmployee(Long id , EmployeeRequestDTO employeeRequestDTO);
 
 }
