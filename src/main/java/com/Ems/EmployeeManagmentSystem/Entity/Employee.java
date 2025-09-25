@@ -46,6 +46,9 @@ public class Employee extends AbstractAudiatable {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = Boolean.TRUE;
 
+    @Column(name = "is_deleted" , nullable = false)
+    private Boolean isDeleted = Boolean.FALSE;
+
     @Override
     public String toString() {
         return "Employee{" +
