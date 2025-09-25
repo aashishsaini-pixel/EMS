@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("employee/api")
+@RequestMapping("/employee")
 @RequiredArgsConstructor
 @Slf4j
 public class EmployeeController {
