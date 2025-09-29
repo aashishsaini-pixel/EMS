@@ -2,26 +2,21 @@ package com.Ems.EmployeeManagmentSystem.Entity;
 
 import com.Ems.EmployeeManagmentSystem.Enum.EmployeeStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Entity
 @Table(name = "employee")
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-@Getter
-@Setter
+@NoArgsConstructor
 public class Employee extends AbstractAudiatable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "employee_code", nullable = false, unique = true, length = 20)
+    @Column(name = "employee_code", unique = true, length = 20)
     private String employeeCode;
 
     @Column(name = "first_name", nullable = false, length = 50)
@@ -49,32 +44,8 @@ public class Employee extends AbstractAudiatable {
     @Column(name = "is_deleted" , nullable = false)
     private Boolean isDeleted = Boolean.FALSE;
 
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "id=" + id +
-                ", employeeCode='" + employeeCode + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", department='" + department + '\'' +
-                ", status=" + status +
-                ", dateOfJoining=" + dateOfJoining +
-                ", isActive=" + isActive +
-                ", createdAt=" + getCreatedAt() +
-                ", updatedAt=" + getUpdatedAt() +
-                '}';
-    }
+    @JoinColumn(name = "user_id" , referencedColumnName = "id")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Users user;
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Employee employee = (Employee) o;
-        return Objects.equals(getId(), employee.getId()) && Objects.equals(getEmployeeCode(), employee.getEmployeeCode()) && Objects.equals(getFirstName(), employee.getFirstName()) && Objects.equals(getLastName(), employee.getLastName()) && Objects.equals(getEmail(), employee.getEmail()) && Objects.equals(getDepartment(), employee.getDepartment()) && getStatus() == employee.getStatus() && Objects.equals(getDateOfJoining(), employee.getDateOfJoining()) && Objects.equals(getIsActive(), employee.getIsActive()) && Objects.equals(getCreatedAt(), employee.getCreatedAt()) && Objects.equals(getUpdatedAt(), employee.getUpdatedAt());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getEmployeeCode(), getFirstName(), getLastName(), getEmail(), getDepartment(), getStatus(), getDateOfJoining(), getIsActive(), getCreatedAt(), getUpdatedAt());
-    }
 }
