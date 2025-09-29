@@ -18,5 +18,5 @@ public interface EmployeeService {
                                           int size,
                                           String sortBy);
     EmployeeResponseDTO updateEmployee(Long id , EmployeeRequestDTO employeeRequestDTO);
-
+    EmployeeResponseDTO getLoggedInUser();
 }

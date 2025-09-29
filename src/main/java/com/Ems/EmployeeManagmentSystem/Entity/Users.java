@@ -3,6 +3,7 @@ package com.Ems.EmployeeManagmentSystem.Entity;
 import com.Ems.EmployeeManagmentSystem.Enum.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users") // Still using 'users' as the table name
@@ -11,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Users {
+public class Users extends AbstractAudiatable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +34,7 @@ public class Users {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
-    @OneToOne(optional = false )
-    @JoinColumn(name = "employee_id", referencedColumnName = "id" )
+    @OneToOne(mappedBy = "user")
     private Employee employee;
 
 }

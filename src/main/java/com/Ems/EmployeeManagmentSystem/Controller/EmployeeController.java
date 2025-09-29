@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,7 +37,8 @@ public class EmployeeController {
 
     }
 
-    @GetMapping
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<Page<EmployeeResponseDTO>>> getEmployees(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) EmployeeStatus status,
@@ -52,6 +54,17 @@ public class EmployeeController {
         return ResponseEntity.ok(CommonResponse.success("Employees fetched successfully", dtoPage));
     }
 
+
+    @GetMapping
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<CommonResponse<EmployeeResponseDTO>> getEmployees() {
+        log.info("EmployeeController:getEmployees - Getting the logged in User");
+        EmployeeResponseDTO loggedInUser = employeeService.getLoggedInUser();
+        log.info("Returning logged-in employee: {}", loggedInUser);
+        return ResponseEntity.ok(CommonResponse.success("Employee fetched successfully", loggedInUser));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<EmployeeResponseDTO>> deleteEmployee(@PathVariable Long id) {
         log.info("EmployeeController:deleteEmployee called with id={}", id);
