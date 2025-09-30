@@ -41,7 +41,15 @@ public class SecurityConfig {
         return http.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/register" , "users/login").permitAll()
+                        .requestMatchers(
+                                "/users/register",
+                                "/users/login",
+                                "/api/v1/swagger-ui/**",
+                                "/api/v1/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -54,13 +62,13 @@ public class SecurityConfig {
     }
 
 
-    @Bean
-    public AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder);
-        provider.setUserDetailsService(userDetailsService);
-        return provider;
-    }
+//    @Bean
+//    public AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder) {
+//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+//        provider.setPasswordEncoder(passwordEncoder);
+//        provider.setUserDetailsService(userDetailsService);
+//        return provider;
+//    }
 
 
     @Bean

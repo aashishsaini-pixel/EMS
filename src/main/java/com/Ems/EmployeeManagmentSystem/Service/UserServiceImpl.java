@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
             }
 
         } catch (AuthenticationException e){
-            throw new AuthenticationFailedException("Invalid credentials");
+            throw new AuthenticationFailedException("Invalid credentials : user not found with email : " + loginRequestDTO.getEmail() );
         }
     }
     @Override
