@@ -32,7 +32,7 @@ public class Users extends AbstractAudiatable{
     private Boolean isDeleted = Boolean.FALSE;
 
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    private Boolean isActive = Boolean.TRUE;
 
     @OneToOne(mappedBy = "user")
     private Employee employee;

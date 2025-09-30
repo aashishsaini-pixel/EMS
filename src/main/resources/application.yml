@@ -10,8 +10,8 @@ spring:
         driver-class-name: com.mysql.cj.jdbc.Driver
 
     jpa:
-        hibernate:
-          ddl-auto: create
+#        hibernate:
+#          ddl-auto: create
         show-sql: true
         properties:
             hibernate:
@@ -27,7 +27,7 @@ jwt:
     expiration: ${JWT_EXPIRATION_TIME:36000}
     issuer: ${JWT_ISSUER:EmployeeAuthServer}
     filter:
-       excluded-paths: ${JWT_FILTER_EXCLUDED_PATHS:/public/**,/actuator/**,/swagger-ui/**,/v3/api-docs/**}
+#       excluded-paths: ${JWT_FILTER_EXCLUDED_PATHS:/public/**,/actuator/**,/swagger-ui/**,/v3/api-docs/**}
        enable-detailed-logging: ${JWT.FILTER.ENABLE.DETAILED.LOGGING:false}
     refresh-expiration: ${JWT.REFRESH.EXPIRATION:604800000}
 

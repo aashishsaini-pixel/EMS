@@ -33,7 +33,7 @@ public class EmployeeController {
 
         log.info("Employee Added with Employee Id {}", employeeResponseDTO.getId());
 
-        return ResponseEntity.ok(CommonResponse.success("Employee added successfully", employeeResponseDTO));
+        return ResponseEntity.ok(CommonResponse.success(true , "Employee added successfully", employeeResponseDTO));
 
     }
 
@@ -51,7 +51,7 @@ public class EmployeeController {
         log.info("EmployeeController:getEmployees");
         Page<EmployeeResponseDTO> dtoPage = employeeService.getEmployee(name, status, department, isActive, page, size, sortBy);
         log.info("Getting total number of Employees {}", dtoPage.getTotalElements());
-        return ResponseEntity.ok(CommonResponse.success("Employees fetched successfully", dtoPage));
+        return ResponseEntity.ok(CommonResponse.success(true ,"Employees fetched successfully", dtoPage));
     }
 
 
@@ -61,7 +61,7 @@ public class EmployeeController {
         log.info("EmployeeController:getEmployees - Getting the logged in User");
         EmployeeResponseDTO loggedInUser = employeeService.getLoggedInUser();
         log.info("Returning logged-in employee: {}", loggedInUser);
-        return ResponseEntity.ok(CommonResponse.success("Employee fetched successfully", loggedInUser));
+        return ResponseEntity.ok(CommonResponse.success(true ,"Employee fetched successfully", loggedInUser));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -73,14 +73,14 @@ public class EmployeeController {
 
         log.info("EmployeeController:deleteEmployee successfully deleted employee with id={}", id);
 
-        return ResponseEntity.ok(CommonResponse.success("Employee deleted successfully", deletedEmployee));
+        return ResponseEntity.ok(CommonResponse.success(true , "Employee deleted successfully", deletedEmployee));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CommonResponse<EmployeeResponseDTO>> updateEmployee(@PathVariable Long id , @Valid @RequestBody EmployeeRequestDTO employeeRequestDTO) {
         log.info("Received request to update Employee with ID: {}", id);
         EmployeeResponseDTO updatedEmployee = employeeService.updateEmployee(id , employeeRequestDTO);
-        return  ResponseEntity.ok(CommonResponse.success("Employee updated successfully", updatedEmployee));
+        return  ResponseEntity.ok(CommonResponse.success(true , "Employee updated successfully", updatedEmployee));
     }
 
 }
