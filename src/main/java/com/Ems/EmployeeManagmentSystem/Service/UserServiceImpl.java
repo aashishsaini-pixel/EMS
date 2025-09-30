@@ -7,6 +7,7 @@ import com.Ems.EmployeeManagmentSystem.DTO.Response.UserResponseDTO;
 import com.Ems.EmployeeManagmentSystem.Entity.Users;
 import com.Ems.EmployeeManagmentSystem.Exceptions.AuthenticationFailedException;
 import com.Ems.EmployeeManagmentSystem.Exceptions.UserAlreadyExistsException;
+import com.Ems.EmployeeManagmentSystem.Exceptions.UserNotFoundException;
 import com.Ems.EmployeeManagmentSystem.Mapper.UserMapper;
 import com.Ems.EmployeeManagmentSystem.Repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -81,9 +82,35 @@ public class UserServiceImpl implements UserService {
                 throw new BadCredentialsException("Invalid credentials");
             }
 
-        } catch (AuthenticationException e) {
-            log.info("Invalid credentials for user with email {}", loginRequestDTO.getEmail());
-            throw new AuthenticationFailedException("Invalid username or password , " +  e.getMessage());
+        } catch (AuthenticationException e){
+            throw new AuthenticationFailedException("Invalid credentials");
         }
     }
+    @Override
+    public UserResponseDTO deleteUser(Long id) {
+        log.info("Deleting user with ID: {}", id);
+
+        Users user = usersRepository.findById(id).orElseThrow(() -> {
+            log.warn("User not found with ID: {}", id);
+            return new UserNotFoundException("User not found with ID: " + id);
+        });
+
+        try {
+            user.setIsDeleted(true);
+            user.setIsActive(false);
+
+            if (user.getEmployee() != null) {
+                user.getEmployee().setIsDeleted(true);
+                user.getEmployee().setIsActive(false);
+            }
+
+            Users updatedUser = usersRepository.save(user);
+            log.info("User with ID {} marked as deleted successfully.", id);
+            return userMapper.toDto(updatedUser);
+        } catch (Exception e) {
+            log.error("Failed to delete user with ID {}: {}", id, e.getMessage(), e);
+            throw new RuntimeException("Failed to delete user with ID: " + id, e);
+        }
+    }
+
 }

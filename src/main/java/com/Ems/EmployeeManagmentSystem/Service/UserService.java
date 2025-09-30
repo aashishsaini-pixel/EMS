@@ -10,4 +10,5 @@ public interface UserService {
 
     JwtResponse login(LoginRequestDTO loginRequestDTO);
 
+    UserResponseDTO deleteUser(Long id);
 }

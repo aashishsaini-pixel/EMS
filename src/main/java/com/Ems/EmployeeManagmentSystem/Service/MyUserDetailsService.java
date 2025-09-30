@@ -27,7 +27,7 @@ public class MyUserDetailsService  implements UserDetailsService {
         Users user = usersRepository.findByEmailAndIsActiveTrueAndIsDeletedFalse(email)
                 .orElseThrow(() -> {
                     log.error("Username or email : " + email + " not found");
-                 return new UserNotFoundException("Username not found with email " + email);
+                 return new UsernameNotFoundException("Username not found with email " + email);
                 });
 
         return new CustomUserDetails(user);

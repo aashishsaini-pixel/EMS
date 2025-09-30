@@ -24,8 +24,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
-        log.error("Authentication EntryPoint");
-        CommonResponse<?> errorResponse = CommonResponse.error(
+        log.error("INSIDE THE AUTHENTICATION ENTRY POINT EXCEPTION CUSTOM");
+        CommonResponse<?> errorResponse = CommonResponse.failed(false ,
                 "Unauthorized access",
                 "UNAUTHORIZED"
         );

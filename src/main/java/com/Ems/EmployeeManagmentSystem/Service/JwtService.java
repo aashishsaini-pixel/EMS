@@ -1,16 +1,18 @@
 package com.Ems.EmployeeManagmentSystem.Service;
 
+import com.Ems.EmployeeManagmentSystem.Exceptions.AuthenticationFailedException;
 import com.Ems.EmployeeManagmentSystem.Exceptions.SecretKeyNotFoundException;
-import com.Ems.EmployeeManagmentSystem.Exceptions.TokenExpiredException;
 import com.Ems.EmployeeManagmentSystem.Exceptions.TokenGenerationException;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -32,10 +34,10 @@ public class JwtService {
     @Value("${jwt.issuer:EMS}")
     private String issuer;
 
-    @Value("${jwt.expiration}") // Default 1 hour in milliseconds
+    @Value("${jwt.expiration}")
     private Long expiration;
 
-    @Value("${jwt.refresh-expiration}") // Default 7 days in milliseconds
+    @Value("${jwt.refresh-expiration}")
     private Long refreshExpiration;
 
     private Key secretKey;
@@ -43,6 +45,7 @@ public class JwtService {
     @PostConstruct
     public void init() {
         log.info("JWT expiration time from config = {}", expiration);
+
         if (!StringUtils.hasText(secretKeyString)) {
             throw new SecretKeyNotFoundException("JWT secret key cannot be null or empty");
         }
@@ -54,7 +57,7 @@ public class JwtService {
             keyBytes = secretKeyString.getBytes(StandardCharsets.UTF_8);
         }
 
-        if (keyBytes.length < 32) { // 256 bits
+        if (keyBytes.length < 32) {
             log.warn("JWT secret key is shorter than recommended 256 bits");
         }
 
@@ -133,42 +136,43 @@ public class JwtService {
         try {
             Date expiration = extractExpiration(token);
             return expiration.before(new Date());
-        } catch (ExpiredJwtException e) {
-            log.debug("Token is expired: {}", e.getMessage());
-            return true;
-        } catch (Exception e) {
-            log.warn("Error checking token expiration", e);
+        } catch (JwtException e) {
+            log.warn("Error while checking token expiration", e);
             return true;
         }
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
+        log.info("Validating the token for user: {}", userDetails.getUsername());
         try {
+            log.info("Parsing the claims for user: {}", userDetails.getUsername());
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .requireIssuer(issuer)
-                    .setAllowedClockSkewSeconds(60) // 1 minute clock skew
+                    .setAllowedClockSkewSeconds(60)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
 
             String username = claims.getSubject();
             if (username == null || !username.equals(userDetails.getUsername())) {
-                return false;
+                log.warn("Username mismatch for user: {}", userDetails.getUsername());
+                throw new AuthenticationFailedException("Username mismatch in token", HttpStatus.UNAUTHORIZED, "JWT_INVALID_USERNAME");
             }
 
             if (isTokenExpired(token)) {
-                throw new TokenExpiredException("Token has expired while validating");
+                log.warn("Inside the Validate Token function Token expired for user: {}", userDetails.getUsername());
+                throw new AuthenticationFailedException("Token expired", HttpStatus.UNAUTHORIZED, "JWT_EXPIRED");
             }
 
             return true;
         } catch (ExpiredJwtException e) {
             log.warn("Token expired: {}", e.getMessage());
-            throw new TokenExpiredException("Token expired while validating");
+            throw new AuthenticationFailedException("Token expired", HttpStatus.UNAUTHORIZED, "JWT_EXPIRED");
         } catch (JwtException | IllegalArgumentException e) {
             log.warn("Invalid token: {}", e.getMessage());
+            throw new AuthenticationFailedException("Invalid JWT token", HttpStatus.UNAUTHORIZED, "JWT_INVALID");
         }
-        return false;
     }
 
     public Optional<String> extractTokenFromHeader(String authorizationHeader) {
@@ -182,7 +186,7 @@ public class JwtService {
         try {
             Date expiration = extractExpiration(token);
             return expiration.getTime() - System.currentTimeMillis();
-        } catch (Exception e) {
+        } catch (JwtException e) {
             log.warn("Error calculating remaining time for token", e);
             return 0;
         }
@@ -191,17 +195,18 @@ public class JwtService {
     public boolean canTokenBeRefreshed(String token) {
         try {
             final Date expiration = extractExpiration(token);
-            final long gracePeriod = 24 * 60 * 60 * 1000; // 24 hours
+            final long gracePeriod = 24 * 60 * 60 * 1000;
             return expiration.getTime() + gracePeriod > System.currentTimeMillis();
-        } catch (Exception e) {
+        } catch (JwtException e) {
             log.debug("Cannot refresh token due to error", e);
             return false;
         }
     }
 
     private Claims extractAllClaims(String token) {
+        log.info("Extracting all claims from token: {}", token);
         if (!StringUtils.hasText(token)) {
-            throw new IllegalArgumentException("Token cannot be null or empty");
+            throw new AuthenticationFailedException("Empty JWT token", HttpStatus.UNAUTHORIZED, "JWT_EMPTY");
         }
 
         try {
@@ -213,19 +218,19 @@ public class JwtService {
                     .getBody();
         } catch (ExpiredJwtException e) {
             log.debug("JWT token is expired: {}", e.getMessage());
-            throw new TokenExpiredException(e.getMessage());
+            throw new AuthenticationFailedException("Token expired", HttpStatus.UNAUTHORIZED, "JWT_EXPIRED");
         } catch (UnsupportedJwtException e) {
             log.warn("JWT token is unsupported: {}", e.getMessage());
-            throw new JwtException("Unsupported JWT token", e);
+            throw new AuthenticationFailedException("Unsupported JWT token", HttpStatus.UNAUTHORIZED, "JWT_UNSUPPORTED");
         } catch (MalformedJwtException e) {
             log.warn("JWT token is malformed: {}", e.getMessage());
-            throw new JwtException("Malformed JWT token", e);
+            throw new AuthenticationFailedException("Malformed JWT token", HttpStatus.UNAUTHORIZED, "JWT_MALFORMED");
         } catch (SecurityException e) {
             log.warn("JWT signature validation failed: {}", e.getMessage());
-            throw new JwtException("JWT signature validation failed", e);
+            throw new AuthenticationFailedException("JWT signature validation failed", HttpStatus.UNAUTHORIZED, "JWT_INVALID_SIGNATURE");
         } catch (IllegalArgumentException e) {
             log.warn("JWT token is invalid: {}", e.getMessage());
-            throw new JwtException("Invalid JWT token", e);
+            throw new AuthenticationFailedException("Invalid JWT token", HttpStatus.UNAUTHORIZED, "JWT_INVALID");
         }
     }
 }
