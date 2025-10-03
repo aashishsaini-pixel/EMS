@@ -10,6 +10,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,4 +90,11 @@ public class GlobalExceptionHandler {
         log.warn("Access Denied Exception : " + ex.getMessage());
         return new ResponseEntity<>(CommonResponse.error(true , ex.getMessage() , "ACCESS_DENIED"),HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<CommonResponse<?>> handleIOException(IOException ex) {
+        log.warn("IOException : " + ex.getMessage());
+        return new ResponseEntity<>(CommonResponse.error(true , "Failed to export the employee list : " + ex.getMessage(), "IO_EXCEPTION"),HttpStatus.BAD_REQUEST);
+    }
+
 }

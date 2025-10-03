@@ -11,13 +11,24 @@ import com.Ems.EmployeeManagmentSystem.Exceptions.UserNotFoundException;
 import com.Ems.EmployeeManagmentSystem.Mapper.EmployeeMapper;
 import com.Ems.EmployeeManagmentSystem.Repository.EmployeeRepository;
 import com.Ems.EmployeeManagmentSystem.Repository.UsersRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -28,6 +39,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
     private final UsersRepository usersRepository;
+
+
+    @Value("${employee.import.batch-size}")
+    private int BATCH_SIZE;
 
     @Transactional
     public EmployeeResponseDTO addEmployee(EmployeeRequestDTO employeeRequestDTO) {
@@ -58,7 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw e;
         } catch (Exception e) {
             log.error("Unexpected error while adding employee with email: {}", requestEmail, e);
-            throw new RuntimeException("Failed to create employee , because one user can be associated with one employee only.......:)", e);
+            throw new RuntimeException("Unexpected error while adding employee with email: " + requestEmail, e);
         }
     }
 
@@ -214,6 +229,85 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new RuntimeException("Unexpected error while retrieving logged-in employee", e);
         }
     }
+
+    @Transactional
+    public void exportAllEmployeesPaginated(HttpServletResponse response) throws IOException {
+        log.info("Starting CSV export for all employees");
+        long startTime = System.currentTimeMillis();
+
+        try {
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            String filename = String.format("employees_export_%s.csv", timestamp);
+
+            response.setContentType("text/csv; charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+
+            Writer writer = new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8);
+
+            writer.write('\ufeff');
+
+            CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
+                    .setHeader("Employee Code", "First Name", "Last Name", "Email",
+                            "Department", "Status", "Date of Joining", "Is Active" , "User Email")
+                    .setDelimiter(',')
+                    .setRecordSeparator("\r\n")
+                    .setQuoteMode(org.apache.commons.csv.QuoteMode.MINIMAL)
+                    .build();
+
+            try (CSVPrinter csvPrinter = new CSVPrinter(writer, csvFormat)) {
+
+                int pageNumber = 0;
+                int batchSize = BATCH_SIZE;
+                int totalExported = 0;
+                Page<Employee> page;
+
+                do {
+                    Pageable pageable = PageRequest.of(pageNumber, batchSize,
+                            Sort.by(Sort.Direction.ASC, "id"));
+
+                    page = employeeRepository.findAll(pageable);
+
+                    log.debug("Processing batch {}: {} employees", pageNumber + 1, page.getNumberOfElements());
+
+                    for (Employee employee : page.getContent()) {
+                        log.info("Processing employee {}", employee);
+                        csvPrinter.printRecord(
+                                employee.getEmployeeCode() != null ? employee.getEmployeeCode() : "",
+                                employee.getFirstName() != null ? employee.getFirstName() : "",
+                                employee.getLastName() != null ? employee.getLastName() : "",
+                                employee.getEmail() != null ? employee.getEmail() : "",
+                                employee.getDepartment() != null ? employee.getDepartment() : "",
+                                employee.getStatus() != null ? employee.getStatus().name() : "",
+                                employee.getDateOfJoining() != null ?
+                                        employee.getDateOfJoining().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "",
+                                employee.getIsActive() != null ? employee.getIsActive().toString() : "false",
+                                employee.getUser() != null? employee.getUser().getEmail() : ""
+                        );
+                        totalExported++;
+                    }
+
+                    pageNumber++;
+
+                } while (page.hasNext());
+
+                csvPrinter.flush();
+
+                long duration = System.currentTimeMillis() - startTime;
+                log.info("CSV export completed successfully. Total employees: {}, Duration: {}ms",
+                        totalExported, duration);
+            }
+
+        } catch (IOException e) {
+            log.error("Error during CSV export", e);
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error during CSV export", e);
+            throw new RuntimeException("Failed to export employees to CSV", e);
+        }
+    }
+
+
 
 
     public Optional<Users> getUser() {

@@ -1,7 +1,7 @@
 spring:
     application:
         name: EmployeeManagementSystem
-    port: ${SERVER_PORT:8081}  # Defaults to 8081 if SERVER_PORT is not set
+#    port: ${SERVER_PORT:8081}  # Defaults to 8081 if SERVER_PORT is not set
 
     datasource:
         url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:ems}?useSSL=false&serverTimezone=UTC
@@ -21,6 +21,7 @@ spring:
 server:
     servlet:
         context-path: /api/v1
+    port: 8081
 
 jwt:
     secret: ${JWT_SECRET}
@@ -35,3 +36,7 @@ jwt:
 #   enabled: true
 #   locations: classpath:db/migration
 #   baseline-on-migrate: true
+
+employee:
+    import:
+        batch-size: ${BATCH_SIZE:1000}

@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/employee")
@@ -77,8 +78,7 @@ public class EmployeeController {
 
 
     @GetMapping
-    @PreAuthorize("hasRole('USER')")
-    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Operation(summary = "Get logged-in employee", description = "Returns the profile of the currently logged-in employee.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Employee fetched successfully",
