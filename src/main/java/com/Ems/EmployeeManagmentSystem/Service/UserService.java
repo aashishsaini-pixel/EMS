@@ -1,9 +1,9 @@
 package com.Ems.EmployeeManagmentSystem.Service;
 
-import com.Ems.EmployeeManagmentSystem.DTO.Request.LoginRequestDTO;
-import com.Ems.EmployeeManagmentSystem.DTO.Request.UserRequestDTO;
-import com.Ems.EmployeeManagmentSystem.DTO.Response.JwtResponse;
-import com.Ems.EmployeeManagmentSystem.DTO.Response.UserResponseDTO;
+import com.Ems.EmployeeManagmentSystem.dto.Request.LoginRequestDTO;
+import com.Ems.EmployeeManagmentSystem.dto.Request.UserRequestDTO;
+import com.Ems.EmployeeManagmentSystem.dto.Response.JwtResponse;
+import com.Ems.EmployeeManagmentSystem.dto.Response.UserResponseDTO;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;

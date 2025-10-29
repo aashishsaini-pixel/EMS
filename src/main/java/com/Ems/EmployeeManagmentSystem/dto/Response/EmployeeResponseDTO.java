@@ -1,4 +1,4 @@
-package com.Ems.EmployeeManagmentSystem.DTO.Response;
+package com.Ems.EmployeeManagmentSystem.dto.Response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

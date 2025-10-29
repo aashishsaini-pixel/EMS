@@ -1,9 +1,9 @@
 package com.Ems.EmployeeManagmentSystem.Service;
 
-import com.Ems.EmployeeManagmentSystem.DTO.Request.LoginRequestDTO;
-import com.Ems.EmployeeManagmentSystem.DTO.Request.UserRequestDTO;
-import com.Ems.EmployeeManagmentSystem.DTO.Response.JwtResponse;
-import com.Ems.EmployeeManagmentSystem.DTO.Response.UserResponseDTO;
+import com.Ems.EmployeeManagmentSystem.dto.Request.LoginRequestDTO;
+import com.Ems.EmployeeManagmentSystem.dto.Request.UserRequestDTO;
+import com.Ems.EmployeeManagmentSystem.dto.Response.JwtResponse;
+import com.Ems.EmployeeManagmentSystem.dto.Response.UserResponseDTO;
 import com.Ems.EmployeeManagmentSystem.Entity.Users;
 import com.Ems.EmployeeManagmentSystem.Exceptions.AuthenticationFailedException;
 import com.Ems.EmployeeManagmentSystem.Exceptions.UserAlreadyExistsException;

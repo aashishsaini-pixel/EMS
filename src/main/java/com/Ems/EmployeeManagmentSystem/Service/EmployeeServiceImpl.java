@@ -1,7 +1,7 @@
 package com.Ems.EmployeeManagmentSystem.Service;
 
-import com.Ems.EmployeeManagmentSystem.DTO.Request.EmployeeRequestDTO;
-import com.Ems.EmployeeManagmentSystem.DTO.Response.EmployeeResponseDTO;
+import com.Ems.EmployeeManagmentSystem.dto.Request.EmployeeRequestDTO;
+import com.Ems.EmployeeManagmentSystem.dto.Response.EmployeeResponseDTO;
 import com.Ems.EmployeeManagmentSystem.Entity.Employee;
 import com.Ems.EmployeeManagmentSystem.Entity.Users;
 import com.Ems.EmployeeManagmentSystem.Enum.EmployeeStatus;

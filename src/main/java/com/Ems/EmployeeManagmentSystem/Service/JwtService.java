@@ -29,16 +29,16 @@ public class JwtService {
     private static final String TOKEN_PREFIX = "Bearer ";
 
     @Value("${jwt.secret}")
-    private String secretKeyString;
+    String secretKeyString;
 
     @Value("${jwt.issuer:EMS}")
-    private String issuer;
+    String issuer;
 
     @Value("${jwt.expiration}")
-    private Long expiration;
+    Long expiration;
 
     @Value("${jwt.refresh-expiration}")
-    private Long refreshExpiration;
+    Long refreshExpiration;
 
     private Key secretKey;
 

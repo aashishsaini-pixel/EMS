@@ -1,11 +1,10 @@
 package com.Ems.EmployeeManagmentSystem.Controller;
 
-import com.Ems.EmployeeManagmentSystem.DTO.Request.EmployeeRequestDTO;
-import com.Ems.EmployeeManagmentSystem.DTO.Request.LoginRequestDTO;
-import com.Ems.EmployeeManagmentSystem.DTO.Request.UserRequestDTO;
-import com.Ems.EmployeeManagmentSystem.DTO.Response.CommonResponse;
-import com.Ems.EmployeeManagmentSystem.DTO.Response.JwtResponse;
-import com.Ems.EmployeeManagmentSystem.DTO.Response.UserResponseDTO;
+import com.Ems.EmployeeManagmentSystem.dto.Request.LoginRequestDTO;
+import com.Ems.EmployeeManagmentSystem.dto.Request.UserRequestDTO;
+import com.Ems.EmployeeManagmentSystem.dto.Response.CommonResponse;
+import com.Ems.EmployeeManagmentSystem.dto.Response.JwtResponse;
+import com.Ems.EmployeeManagmentSystem.dto.Response.UserResponseDTO;
 import com.Ems.EmployeeManagmentSystem.Service.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

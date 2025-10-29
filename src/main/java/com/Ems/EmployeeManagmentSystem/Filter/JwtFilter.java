@@ -1,6 +1,6 @@
 package com.Ems.EmployeeManagmentSystem.Filter;
 
-import com.Ems.EmployeeManagmentSystem.DTO.Response.CommonResponse;
+import com.Ems.EmployeeManagmentSystem.dto.Response.CommonResponse;
 import com.Ems.EmployeeManagmentSystem.Exceptions.AuthenticationFailedException;
 import com.Ems.EmployeeManagmentSystem.Service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,15 +17,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -110,9 +107,9 @@ public class JwtFilter extends OncePerRequestFilter {
             log.debug("Authorities: {}", userDetails.getAuthorities());
         }
 
-        request.setAttribute("jwt.username", username);
-        request.setAttribute("jwt.authorities", userDetails.getAuthorities());
-        request.setAttribute("jwt.token", token);
+//        request.setAttribute("jwt.username", username);
+//        request.setAttribute("jwt.authorities", userDetails.getAuthorities());
+//        request.setAttribute("jwt.token", token);
     }
 
     private Optional<String> extractTokenFromRequest(HttpServletRequest request) {
