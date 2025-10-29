@@ -1,4 +1,4 @@
-package com.Ems.EmployeeManagmentSystem.DTO.Request;
+package com.Ems.EmployeeManagmentSystem.dto.Request;
 
 import com.Ems.EmployeeManagmentSystem.Validator.ValidEmployeeStatus;
 import jakarta.validation.constraints.*;

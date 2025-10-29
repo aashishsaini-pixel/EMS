@@ -1,19 +1,22 @@
-package com.Ems.EmployeeManagmentSystem.DTO.Request;
+package com.Ems.EmployeeManagmentSystem.dto.Request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
-public class LoginRequestDTO {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class UserRequestDTO {
 
     @NotBlank(message = "Email is required")
-    @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
-            flags = Pattern.Flag.CASE_INSENSITIVE , message = "Please enter Valid email")
+    @Email(message = "Invalid email format")
     @Size(max = 100, message = "Email must not exceed 100 characters")
     private String email;
 
@@ -25,4 +28,5 @@ public class LoginRequestDTO {
     )
     private String password;
 
+    private String role;
 }

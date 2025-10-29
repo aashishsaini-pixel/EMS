@@ -1,9 +1,8 @@
-package com.Ems.EmployeeManagmentSystem.DTO.Response;
+package com.Ems.EmployeeManagmentSystem.dto.Response;
 
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.SecondaryRow;
 
 import java.util.List;
 

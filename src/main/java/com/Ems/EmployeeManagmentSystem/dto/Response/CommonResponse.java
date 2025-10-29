@@ -1,4 +1,4 @@
-package com.Ems.EmployeeManagmentSystem.DTO.Response;
+package com.Ems.EmployeeManagmentSystem.dto.Response;
 
 import com.Ems.EmployeeManagmentSystem.Enum.CommonResponseStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -34,8 +34,6 @@ public class CommonResponse<T> {
     public static <T> CommonResponse<T> failed(Boolean isAuthenticated, String message, String errorCode) {
         return new CommonResponse<>(isAuthenticated, CommonResponseStatus.FAILED, message, errorCode,null , null);
     }
-
-
 
     public static CommonResponse<?> validationError(Map<String, String> fieldErrors) {
         return new CommonResponse<>(false, CommonResponseStatus.ERROR, "Validation failed", "VALIDATION_ERROR", null, fieldErrors);

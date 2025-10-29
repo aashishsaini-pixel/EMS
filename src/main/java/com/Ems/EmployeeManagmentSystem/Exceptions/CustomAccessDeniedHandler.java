@@ -1,6 +1,6 @@
 package com.Ems.EmployeeManagmentSystem.Exceptions;
 
-import com.Ems.EmployeeManagmentSystem.DTO.Response.CommonResponse;
+import com.Ems.EmployeeManagmentSystem.dto.Response.CommonResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

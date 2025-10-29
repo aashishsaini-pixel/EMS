@@ -1,8 +1,8 @@
 package com.Ems.EmployeeManagmentSystem.Controller;
 
-import com.Ems.EmployeeManagmentSystem.DTO.Request.EmployeeRequestDTO;
-import com.Ems.EmployeeManagmentSystem.DTO.Response.CommonResponse;
-import com.Ems.EmployeeManagmentSystem.DTO.Response.EmployeeResponseDTO;
+import com.Ems.EmployeeManagmentSystem.dto.Request.EmployeeRequestDTO;
+import com.Ems.EmployeeManagmentSystem.dto.Response.CommonResponse;
+import com.Ems.EmployeeManagmentSystem.dto.Response.EmployeeResponseDTO;
 import com.Ems.EmployeeManagmentSystem.Enum.EmployeeStatus;
 import com.Ems.EmployeeManagmentSystem.Service.EmployeeServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/employee")

@@ -1,6 +1,5 @@
 package com.Ems.EmployeeManagmentSystem.Controller;
 
-import com.Ems.EmployeeManagmentSystem.DTO.Response.CommonResponse;
 import com.Ems.EmployeeManagmentSystem.Service.EmployeeService;
 import com.Ems.EmployeeManagmentSystem.Service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

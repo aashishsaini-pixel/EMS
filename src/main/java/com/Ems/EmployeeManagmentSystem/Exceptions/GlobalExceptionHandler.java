@@ -1,7 +1,7 @@
 package com.Ems.EmployeeManagmentSystem.Exceptions;
 
 
-import com.Ems.EmployeeManagmentSystem.DTO.Response.CommonResponse;
+import com.Ems.EmployeeManagmentSystem.dto.Response.CommonResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
